@@ -29,6 +29,10 @@ import http from 'node:http';
   Cabeçalhos (Req/Res) => Metadados (informações adicionais de como o dado pode ser interpretado pelo lado do client)
 */
 
+/*
+  HTTP Status Code => 100, 200, 201, 400, 404, 500...
+*/
+
 const users = [];
 
 const server = http.createServer((req, res) => {
@@ -38,6 +42,7 @@ const server = http.createServer((req, res) => {
   if (method === 'GET' && url === '/users') {
     return res
       .setHeader('Content-type', 'application/json')
+      .writeHead(200)
       .end(JSON.stringify(users));
 
   } else if (method === 'POST' && url === '/users') {
@@ -48,7 +53,7 @@ const server = http.createServer((req, res) => {
     })
     return res.end(`${method} ${url}, Cadastro de usuários`);
   } else {
-    return res.end('Hello World! 🍺');
+    return res.writeHead(404).end('Rota não encontrada! 🍺');
   }
 
 });
