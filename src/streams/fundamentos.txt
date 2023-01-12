@@ -1,0 +1,12 @@
+Fundamentos Streams
+
+- Importação de clientes via .csv
+- 1Gb - 1.000.000
+- POST /import import.csv
+
+- 10mb/s - 100s
+- 100s -> inserção no banco de dados
+- 10mb/s -> 10.000
+
+- Readable Streams (lendo aos poucos)
+- Writable Streams (enviando aos poucos)
