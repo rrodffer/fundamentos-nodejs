@@ -1,7 +1,8 @@
 import http from 'node:http';
+import { randomUUID } from 'node:crypto';
+
 import { json } from './middlewares/json.js';
 import { Database } from './database.js';
-
 const database = new Database();
 /* 
 - CommonJS => require "type": "commonjs"
@@ -51,7 +52,7 @@ const server = http.createServer(async (req, res) => {
   } else if (method === 'POST' && url === '/users') {
     const { id, name, email } = req.body;
     const user = {
-      id,
+      id: randomUUID(),
       name,
       email
     }
