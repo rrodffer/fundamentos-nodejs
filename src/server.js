@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { json } from './middlewares/json.js';
 
 /* 
 - CommonJS => require "type": "commonjs"
@@ -38,22 +39,11 @@ const users = [];
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
-  const buffers = [];
-
-  for await (const chuck of req) {
-    buffers.push(chuck);
-  }
-
-  try {
-    req.body = JSON.parse(Buffer.concat(buffers).toString());
-  } catch (error) {
-    req.body = null;
-  }
+  await json(req, res);
 
 
   if (method === 'GET' && url === '/users') {
     return res
-      .setHeader('Content-type', 'application/json')
       .writeHead(200)
       .end(JSON.stringify(users));
 
