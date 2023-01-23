@@ -1,6 +1,8 @@
 import http from 'node:http';
 import { json } from './middlewares/json.js';
+import { Database } from './database.js';
 
+const database = new Database();
 /* 
 - CommonJS => require "type": "commonjs"
 - ESModules => import "type": "module"
@@ -34,26 +36,27 @@ import { json } from './middlewares/json.js';
   HTTP Status Code => 100, 200, 201, 400, 404, 500...
 */
 
-const users = [];
-
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
   await json(req, res);
 
-
   if (method === 'GET' && url === '/users') {
+    const users = database.select('users');
+
     return res
       .writeHead(200)
       .end(JSON.stringify(users));
 
   } else if (method === 'POST' && url === '/users') {
     const { id, name, email } = req.body;
-    users.push({
+    const user = {
       id,
       name,
       email
-    });
+    }
+
+    database.insert('users', user)
     return res.writeHead(201).end();
   } else {
     return res.writeHead(404).end('Rota não encontrada! 🍺');
