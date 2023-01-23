@@ -35,8 +35,20 @@ import http from 'node:http';
 
 const users = [];
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const { method, url } = req;
+
+  const buffers = [];
+
+  for await (const chuck of req) {
+    buffers.push(chuck);
+  }
+
+  try {
+    req.body = JSON.parse(Buffer.concat(buffers).toString());
+  } catch (error) {
+    req.body = null;
+  }
 
 
   if (method === 'GET' && url === '/users') {
@@ -46,12 +58,13 @@ const server = http.createServer((req, res) => {
       .end(JSON.stringify(users));
 
   } else if (method === 'POST' && url === '/users') {
+    const { id, name, email } = req.body;
     users.push({
-      id: '123ID',
-      name: 'Rayron',
-      email: 'email@example.com'
-    })
-    return res.end(`${method} ${url}, Cadastro de usuários`);
+      id,
+      name,
+      email
+    });
+    return res.writeHead(201).end();
   } else {
     return res.writeHead(404).end('Rota não encontrada! 🍺');
   }
