@@ -1,9 +1,8 @@
 import http from 'node:http';
-import { randomUUID } from 'node:crypto';
 
 import { json } from './middlewares/json.js';
-import { Database } from './database.js';
-const database = new Database();
+import { routes } from './routes.js';
+
 /* 
 - CommonJS => require "type": "commonjs"
 - ESModules => import "type": "module"
@@ -42,27 +41,15 @@ const server = http.createServer(async (req, res) => {
 
   await json(req, res);
 
-  if (method === 'GET' && url === '/users') {
-    const users = database.select('users');
+  const route = routes.find(route => {
+    return route.method === method && route.path === url
+  });
 
-    return res
-      .writeHead(200)
-      .end(JSON.stringify(users));
-
-  } else if (method === 'POST' && url === '/users') {
-    const { id, name, email } = req.body;
-    const user = {
-      id: randomUUID(),
-      name,
-      email
-    }
-
-    database.insert('users', user)
-    return res.writeHead(201).end();
-  } else {
-    return res.writeHead(404).end('Rota não encontrada! 🍺');
+  if (route) {
+    return route.handler(req, res)
   }
 
+  return res.writeHead(404).end('Rota não encontrada! 🍺');
 });
 
 server.listen(3333);
