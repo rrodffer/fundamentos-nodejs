@@ -36,13 +36,19 @@ import { routes } from './routes.js';
   HTTP Status Code => 100, 200, 201, 400, 404, 500...
 */
 
+/*
+  Query Parameters: URL Stateful ->  buscas com filtros, paginação, parâmetro não obrigatório | GET http://localhost:3333/users?userId=1&name=Jhon
+  Route Parameters: identificação de recursos, busca especifica, parâmetro obrigatório | GET http://localhost:3333/users/1
+  Request Body: Envio de informações de formulários(JSON), cadastro etc...| POST http://localhost:3333/users
+*/
+
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
   await json(req, res);
 
   const route = routes.find(route => {
-    return route.method === method && route.path === url
+    return route.method === method && route.path.test(url);
   });
 
   if (route) {
